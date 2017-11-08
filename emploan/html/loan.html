@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+		<title>员工贷</title>
+		<link rel="stylesheet" type="text/css" href="../fonts/font-awesome.min.css" />
+		<link rel="stylesheet" type="text/css" href="../css/weui.min.css" />
+		<link rel="stylesheet" type="text/css" href="../css/jquery-weui.min.css" />
+		<link rel="stylesheet" type="text/css" href="../css/index.css" />
+		<script src="../libs/jquery-2.1.4.js"></script>
+		<script src="../libs/jquery-weui.min.js"></script>
+		<script src="../libs/echarts.simple.min.js"></script>
+		<script src="../libs/echarts-liquidfill.min.js"></script>
+		<script src="../js/emploan-base.js"></script>
+		<script src="../js/filter.js"></script>
+		<style type="text/css">
+			#chart {
+				width: 80%;
+				margin: 10px auto;
+				height: 300px;
+			}
+			
+			.mask {
+				background: #000000;
+				opacity: 0.4;
+				position: fixed;
+				top: 0;
+				right: 0;
+				left: 0;
+				bottom: 0;
+				display: none;
+			}
+			
+			.my-toast {
+				width: 80%;
+				margin: 0 auto;
+				background: #FFFFFF;
+				border-radius: 15px;
+				position: absolute;
+				top: 35%;
+				left: 50%;
+				transform: translate(-50%);
+				display: none;
+			}
+			
+			.my-toast div {
+				text-align: center;
+			}
+			
+			.Ttext {
+				padding: 25px 0;
+			}
+			
+			.know {
+				border-top: 1px solid #eee;
+				padding: 15px 0;
+				color: #007AE7;
+			}
+			
+			.delete {
+				position: absolute;
+				top: 0;
+				right: 18px;
+				color: rgb(255, 160, 16);
+			}
+			
+			#news,
+			#platNews {
+				color: rgb(255, 153, 0);
+			}
+			
+			#newli li {
+				text-align: center;
+			}
+		</style>
+	</head>
+
+	<body ontouchstart>
+		<div class="weui-tab">
+			<div class="weui-tab__bd">
+				<div id="tab1" class="weui-tab__bd-item weui-tab__bd-item--active">
+					<!--<div class="container-tip padding-10" style="overflow: hidden;position: relative;">
+						<ul id="platNews">-->
+					<!--<li><a href="#" >1.您的员工贷于2017-09-15到期</a></li>
+							<li><a href="#" >2.您的员工贷于2017-09-16到期</a></li>
+							<li><a href="#" >3.您的员工贷于2017-09-17到期</a></li>-->
+					<!--</ul>
+						<div class="delete"><i class="fa fa-remove" aria-hidden="true"></i></div>
+					</div>-->
+					<div class="banner">
+						<img src="../images/loan/banner.png" width="100%" />
+					</div>
+					<div class="container">
+						<!--<div class="container-tip padding-10" style="overflow: hidden;position: relative;">
+							<div class="horn">
+								<img src="../images/loan/horn.png" style="width: 18px;" />
+							</div>
+							<ul id="news">-->
+						<!--<li><a href="#" >1.您的员工贷于2017-09-15到期</a></li>
+								<li><a href="#" >2.您的员工贷于2017-09-16到期</a></li>
+								<li><a href="#" >3.您的员工贷于2017-09-17到期</a></li>-->
+						<!--</ul>
+							<div class="delete"><i class="fa fa-remove" aria-hidden="true"></i></div>
+						</div>-->
+						<div id="circle">
+							<div id="chart">
+
+							</div>
+							<div class="wen">
+								<a href="helpCenter.html"><img src="../images/loan/wen.png" width="50%" /></a>
+							</div>
+							<div class="circle-tip">
+								<p>可用额度</p>
+								<p class="avaCredit"></p>
+								<p>总额度</p>
+								<p class="totalCre"></p>
+							</div>
+						</div>
+						<div class="borrow-btn">
+							立即借款
+						</div>
+						<div class="botton-tip">
+							息费按天计算,日息费率最低万四
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="mask"></div>
+			<div class="my-toast">
+				<div class="Ttext">
+					请输入大于1000的数字
+				</div>
+				<div class="know">
+					我知道了
+				</div>
+			</div>
+			<div class="weui-tabbar">
+				<a href="javascript:" class="weui-tabbar__item weui-bar__item--on">
+					<div class="weui-tabbar__icon">
+						<img src="../images/my/borrow.png" alt="" width="20px">
+					</div>
+					<p class="weui-tabbar__label">借款</p>
+				</a>
+				<a href="repayment.html" class="weui-tabbar__item">
+					<div class="weui-tabbar__icon">
+						<img src="../images/my/repay-1.png" alt="" width="20px">
+					</div>
+					<p class="weui-tabbar__label">还款</p>
+				</a>
+				<a href="my.html" class="weui-tabbar__item">
+					<div class="weui-tabbar__icon">
+						<img src="../images/my/my-1.png" alt="" width="20px">
+					</div>
+					<p class="weui-tabbar__label">我的</p>
+				</a>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript">
+		var token = window.localStorage.getItem("token");
+		$(function() {
+			//借款无缝滚动
+			function move() {
+				$("#platNews").animate({
+					"margin-top": "-30px"
+				}, 600, function() {
+					var first = $("#platNews li:first-child"); //找到ul的第一个子元素
+					$("#platNews").append(first); //插入到ul的里面最后后面
+					$("#platNews").css("margin-top", 0); //ulmargin-top归0
+				});
+			}
+			var id = setInterval(move, 3000);
+
+			function move1() {
+				$("#news").animate({
+					"margin-top": "-30px"
+				}, 600, function() {
+					var first = $("#news li:first-child");
+					$("#news").append(first);
+					$("#news").css("margin-top", 0);
+				});
+			}
+			var id = setInterval(move1, 1000);
+			$.showLoading("数据加载中...");
+			getData();
+			notice();
+			platNotice();
+		})
+		var openDetail = function(obj) {
+			window.localStorage.setItem("id", obj.id)
+			window.location.href = "noticeDetail.html";
+		}
+		var openRepay = function(obj) {
+				window.location.href = "repayment.html";
+			}
+			//获取平台公告信息列表
+		function platNotice() {
+			$.ajax({
+				type: "post",
+				url: emploan.config.basePath + "notice/getPlatformNotices.do",
+				contentType: "application/json",
+				dataType: "json",
+				headers: {
+					'token': token,
+				},
+				data: {},
+				success: function(data) {
+					if(data.code == 0) {
+						var data = data.data;
+						if(data.length > 0) {
+							var html = "";
+							html += '<div class="container-tip padding-10" style="overflow: hidden;position: relative;margin-top:0">';
+							html += '<div class="horn"><img src="../images/loan/horn.png" style="width: 18px;" /></div>';
+							html += '<ul id="platNews">';
+							for(var i = 0; i < data.length; i++) {
+								html += '<li class="newli" id=' + data[i].id + ' onclick="openDetail(this);">' + data[i].title + '</li>';
+							}
+							html += '</ul>';
+							html += '<div class="delete"><i class="fa fa-remove" aria-hidden="true"></i></div></div>';
+							$(".container").prepend(html);
+							$(".delete").on("click", function() {
+								$(this).parent().hide();
+							})
+						}
+					}
+				},
+				error: function(err) {
+					alert(err.errorMsg);
+				}
+			});
+		}
+		//水滴图
+		var chart = function(precent) {
+				var chart = echarts.init(document.getElementById('chart'));
+				var option = {
+					series: [{
+						type: 'liquidFill',
+						radius: '100%',
+						data: [0.6],
+						label: {
+							normal: {
+								//		                formatter: '{规划局美国}\n{可用额度}\n2500',
+								textStyle: {
+									fontSize: 26,
+									align: 'center',
+									color: "#fff"
+								}
+							}
+						},
+						outline: {
+							show: false
+						},
+						backgroundStyle: {
+							//			            borderColor: '#156ACF',
+							//			            borderWidth: 1,
+							//			            shadowColor: 'rgba(0, 0, 0, 1)',
+							//			            shadowBlur: 20,
+							color: 'rgb(163,212,255)',
+						},
+						color: ["rgb(22,111,253)"],
+						amplitude: '5%',
+						waveLength: '100%',
+						//			    waveAnimation: false,
+					}]
+				};
+				option.series[0].data[0] = precent;
+				option.series[0].label.normal.formatter = '\n';
+				chart.setOption(option);
+			}
+			//还款公告
+		function notice() {
+			$.ajax({
+				type: "post",
+				url: emploan.config.basePath + "notice/remind.do",
+				contentType: "application/json",
+				dataType: "json",
+				headers: {
+					'token': token,
+				},
+				data: {},
+				success: function(data) {
+					if(data.code == 0) {
+						var data = data.data;
+						if(data.length) {
+							var html = "";
+							html += '<div class="container-tip padding-10" style="overflow: hidden;position: relative;">';
+							html += '<ul id="news">';
+							for(var i = 0; i < data.length; i++) {
+								html += '<li class="newli" id=' + data[i].id + ' onclick="openRepay(this);">' + data[i].title + '</li>';
+							}
+							html += '</ul>';
+							html += '<div class="delete"><i class="fa fa-remove" aria-hidden="true"></i></div></div>';
+							$("#tab1").prepend(html);
+							$(".delete").on("click", function() {
+								$(this).parent().hide();
+							})
+						}
+					}
+				},
+				error: function(err) {
+					alert(err.errorMsg);
+				}
+			});
+		}
+		//获取额度信息
+		function getData() {
+			$.ajax({
+				type: "post",
+				url: emploan.config.basePath + "emp/getLoanAmount.do",
+				dataType: "json",
+				headers: {
+					'token': token,
+				},
+				data: {},
+				dataType: "json",
+				success: function(data) {
+					if(data.code == 0) {
+						$.hideLoading();
+						$(".totalCre").html(data.data.totalAmount);
+						$(".avaCredit").html(data.data.loanAmount);
+						var precent = data.data.loanAmount / data.data.totalAmount;
+						chart(precent);
+						window.localStorage.setItem("isUpload", data.data.isUpload);
+						window.localStorage.setItem("isOverdue", data.data.isOverdue);
+						window.localStorage.setItem("defDiscountsNum", data.data.defDiscountsNum);
+					} else {
+						alert(data.errorMsg);
+					}
+				},
+				error: function(err) {
+					alert(err.errorMsg);
+				}
+			});
+		}
+		//点击申请借款
+		$(".borrow-btn").click(function() {
+			var isUpload = window.localStorage.getItem("isUpload");
+			var isOverdue = window.localStorage.getItem("isOverdue");
+			if(isUpload == "false") {
+				$(".Ttext").text("请先上传身份");
+				$(".know").text("确定");
+				$(".mask").show();
+				$(".my-toast").show();
+				$(".know").click(function() {
+					$(".mask").hide();
+					$(".my-toast").hide();
+					window.location.href = "cardFile.html";
+				})
+			}
+			if(isUpload == "true" && isOverdue == "false") {
+				window.location.href = "loanApplication.html"
+			} else {
+				$(".Ttext").text("请先上传身份");
+				$(".know").text("确定");
+				$(".mask").show();
+				$(".my-toast").show();
+				$(".know").click(function() {
+					$(".mask").hide();
+					$(".my-toast").hide();
+					window.location.href = "cardFile.html";
+				})
+			}
+
+		})
+	</script>
+
+</html>

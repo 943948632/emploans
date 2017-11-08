@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+		<title>我的</title>
+		<link rel="stylesheet" type="text/css" href="../css/weui.min.css" />
+		<link rel="stylesheet" type="text/css" href="../css/jquery-weui.min.css" />
+		<link rel="stylesheet" type="text/css" href="../css/index.css" />
+		<script src="../libs/jquery-2.1.4.js"></script>
+		<script src="../libs/jquery-weui.min.js"></script>
+		<script src="../js/emploan-base.js"></script>
+		<script src="../js/filter.js"></script>
+
+		<style type="text/css">
+			.filCard {
+				display: none;
+			}
+			
+			.info {
+				margin-left: 10px;
+			}
+		</style>
+	</head>
+
+	<body ontouchstart>
+		<div class="weui-tab">
+			<div class="weui-tab__bd">
+				<div id="tab3" class="weui-tab__bd-item weui-tab__bd-item--active">
+					<div class="user">
+						<div class="pic fl"><img src="" alt="" style="width: 100%;border-radius: 50%;" /></div>
+						<div class="info fl">
+							<p class="name"></p>
+							<p class="comp"></p>
+							<p class="phone"><span></span></p>
+						</div>
+						<div class="fl filCard">未上传身份证</div>
+						<a class="weui-cell_access fr" href="javascript:;">
+							<div class="weui-cell__ft">
+							</div>
+						</a>
+					</div>
+					<div>
+						<div class="weui-cells">
+							<a class="weui-cell weui-cell_access" href="loanRecord.html">
+								<div class="weui-cell__bd">
+									<p><img src="../images/my/brecord.png" class="img" style="height: 25px;" /> 借款记录</p>
+								</div>
+								<div class="weui-cell__ft">
+								</div>
+							</a>
+							<a class="weui-cell weui-cell_access" href="bank.html">
+								<div class="weui-cell__bd">
+									<p><img src="../images/my/bank.png" class="img" /> 银行卡</p>
+								</div>
+								<div class="weui-cell__ft">
+								</div>
+							</a>
+							<a class="weui-cell weui-cell_access" href="aboutUs.html">
+								<div class="weui-cell__bd">
+									<p><img src="../images/my/about.png" class="img" /> 关于我们</p>
+								</div>
+								<div class="weui-cell__ft">
+								</div>
+							</a>
+							<a class="weui-cell weui-cell_access" href="feedback.html">
+								<div class="weui-cell__bd">
+									<p><img src="../images/my/mess.png" class="img" /> 意见反馈</p>
+								</div>
+								<div class="weui-cell__ft">
+								</div>
+							</a>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="weui-tabbar">
+				<a href="loan.html" class="weui-tabbar__item">
+					<div class="weui-tabbar__icon">
+						<img src="../images/my/borrow-1.png" alt="" width="20px">
+					</div>
+					<p class="weui-tabbar__label">借款</p>
+				</a>
+				<a href="repayment.html" class="weui-tabbar__item">
+					<div class="weui-tabbar__icon">
+						<img src="../images/my/repay-1.png" alt="" width="20px">
+					</div>
+					<p class="weui-tabbar__label">还款</p>
+				</a>
+				<a href="javascript:" class="weui-tabbar__item weui-bar__item--on">
+					<div class="weui-tabbar__icon">
+						<img src="../images/my/my.png" alt="" width="20px">
+					</div>
+					<p class="weui-tabbar__label">我的</p>
+				</a>
+			</div>
+		</div>
+	</body>
+	<script src="../libs/jquery-2.1.4.js"></script>
+	<script src="../libs/jquery-weui.min.js"></script>
+	<script src="../js/emploan-base.js"></script>
+	<script type="text/javascript">
+		$(function() {
+			var token = window.localStorage.getItem("token");
+			$.ajax({
+				url: emploan.config.basePath + "emp/info.do",
+				contentType: "application/json",
+				type: "POST",
+				dataType: "json",
+				headers: {
+					'token': token,
+				},
+				data: {},
+				success: function(data) {
+					if(data.code == "0") {
+						$(".pic img").attr("src", data.data.headimgurl);
+						$(".name").html(data.data.nickname);
+						$(".comp").html(data.data.company);
+						$(".phone span").html(data.data.phone);
+						if(data.data.hasIdCard == false) {
+							$(".comp").css({
+								"width": "60%",
+								"whiteSpace": "nowrap",
+								"overflow": "hidden",
+								"textOverflow": "ellipsis"
+							})
+							$(".filCard").show();
+							$(".filCard").click(function() {
+								window.location.href = "cardFile.html"
+							})
+						}
+					}
+				},
+				error: function(err) {
+					alert(err.errorMsg);
+				}
+			});
+		})
+	</script>
+
+</html>

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+		<title>还款详情</title>
+		<link rel="stylesheet" type="text/css" href="../fonts/font-awesome.min.css" />
+		<link rel="stylesheet" type="text/css" href="../css/weui.min.css" />
+		<link rel="stylesheet" type="text/css" href="../css/jquery-weui.min.css" />
+		<link rel="stylesheet" type="text/css" href="../css/index.css" />
+		<script src="../libs/jquery-2.1.4.js"></script>
+		<script src="../libs/jquery-weui.min.js"></script>
+		<script src="../js/emploan-base.js"></script>
+		<script src="../js/filter.js"></script>
+
+	</head>
+
+	<body ontouchstart>
+		<div class="weui-tab">
+			<div class="weui-tab__bd">
+				<div id="tab2" class="weui-tab__bd-item weui-tab__bd-item--active">
+					<div class="surplus">
+						<p>未还总额 (元)</p>
+						<p class="num"></p>
+					</div>
+					<div class="repayPlan">
+						<div class="weui-cells__title">还款计划</div>
+						<div class="weui-cells">
+							<!--<a class="weui-cell weui-cell_access" href="javascript:;">
+								<div class="weui-cell__bd">
+									<p>2017/09/30应还</p>
+								</div>
+								<div class="weui-cell__ft">
+									<span class="renum">50,000.00</span>
+								</div>
+							</a>-->
+						</div>
+					</div>
+					<div class="colAccount">
+						<ul>
+							<li>收款账户 </li>
+							<li>收款人 : <span>李刚</span></li>
+							<li>开户行 : <span>建设银行</span></li>
+							<li>银行账户 : <span> 6226222702189205</span></li>
+						</ul>
+					</div>
+					<div class="repayTip">
+						<p>还款说明</p>
+						<ul>
+							<li>1、借款人可通过银行转账，网银转账，或支付宝转账，还款到出借人银行账户。 </li>
+							<li>2、借款人必须在还款日当日16点前还本付息，还款到出借人银行账户。</li>
+							<li>3、如果还款日在法定节假日期间，借款人需提前到最近一个工作日16点前还款。</li>
+						</ul>
+						<div class="help">
+							<i class="fa fa-plus-square" aria-hidden="true"></i> 更多帮助
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="weui-tabbar">
+				<a href="loan.html" class="weui-tabbar__item">
+					<div class="weui-tabbar__icon">
+						<img src="../images/my/borrow-1.png" alt="" width="20px">
+					</div>
+					<p class="weui-tabbar__label">借款</p>
+				</a>
+				<a href="javascript:" class="weui-tabbar__item weui-bar__item--on">
+					<div class="weui-tabbar__icon">
+						<img src="../images/my/repay.png" alt="" width="20px">
+					</div>
+					<p class="weui-tabbar__label">还款</p>
+				</a>
+				<a href="my.html" class="weui-tabbar__item">
+					<div class="weui-tabbar__icon">
+						<img src="../images/my/my-1.png" alt="" width="20px">
+					</div>
+					<p class="weui-tabbar__label">我的</p>
+				</a>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript">
+		var token = window.localStorage.getItem("token");
+		$(function() {
+			$.showLoading("数据加载中...");
+			var data = {
+				pageNum: 1,
+				pageSize: 25
+			}
+			$.ajax({
+				type: "post",
+				url: emploan.config.basePath + "empRepay/getRepayments.do",
+				contentType: "application/json",
+				dataType: "json",
+				headers: {
+					'token': token,
+				},
+				data: JSON.stringify(data),
+				success: function(data) {
+					if(data.code == 0) {
+						$.hideLoading();
+						var data = data.data;
+						$(".surplus .num").text(data.totalAmount || "0.00");
+						if(!data.totalAmount) {
+							var rehtml = ''
+							rehtml += '<div class="noRepay">'
+							rehtml += '<img src="../images/repayment/norepay.png" style="width: 12%;margin-top: 20px;" />'
+							rehtml += '<p class="ptext" >暂无还款计划</p>'
+							rehtml += '</div>'
+							$(".repayPlan").html(rehtml);
+							$(".colAccount").hide();
+						} else {
+							var html = '';
+							for(var i = 0; i < data.result.records.length; i++) {
+								html += '<a class="weui-cell weui-cell_access repayment" href="javascript:;"><div class="weui-cell__bd">';
+								html += '<p><span class="time">' + data.result.records[i].dueDate + '</span>应还</p></div>';
+								html += '<div class="weui-cell__ft">';
+								html += '<span class="renum">' + data.result.records[i].applyAmount + '</span>';
+								html += '</div></a>';
+							}
+							$(".weui-cells").append(html);
+							$(".repayment").each(function() {
+								$(this).click(function() {
+									var index = $(this).index();
+									window.localStorage.setItem("id", data.result.records[index].id);
+									window.location.href = "loanDetail.html";
+								})
+							})
+						}
+					}
+				},
+				error: function(err) {
+					alert(err.errorMsg);
+				}
+			});
+			$(".help").click(function() {
+				window.location.href = "helpCenter.html";
+			})
+		})
+	</script>
+
+</html>

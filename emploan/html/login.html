@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+		<title>注册</title>
+		<link rel="stylesheet" type="text/css" href="../fonts/font-awesome.min.css" />
+		<link rel="stylesheet" type="text/css" href="../css/weui.min.css" />
+		<link rel="stylesheet" type="text/css" href="../css/jquery-weui.min.css" />
+		<script src="../libs/jquery-2.1.4.js"></script>
+		<script src="../libs/jquery-weui.js"></script>
+		<script src="../js/emploan-base.js"></script>
+		<style type="text/css">
+			* {
+				margin: 0;
+				padding: 0;
+			}
+			
+			body {
+				font-family: "微软雅黑";
+			}
+			
+			a {
+				text-decoration: none;
+				color: #007ae7;
+			}
+			
+			ul,
+			li {
+				list-style: none;
+			}
+			
+			.arrleft {
+				overflow: hidden;
+				position: absolute;
+				left: 10px
+			}
+			
+			.arrleft img {
+				float: left;
+				width: 12px;
+				margin-top: 14px;
+				margin-right: 5px;
+			}
+			
+			.logoImg {
+				text-align: center;
+				margin-top: 10px;
+			}
+			
+			.iptGroup {
+				width: 78%;
+				margin: 0 auto;
+				/*margin-top: 180px;*/
+			}
+			
+			.iptOut input {
+				display: inline-block;
+				outline: none;
+				border: none;
+				font-size: 16px;
+				position: absolute;
+				top: 13px;
+			}
+			
+			.iptOut {
+				height: 40px;
+				line-height: 40px;
+				border-bottom: 1px solid rgb(177, 177, 177);
+				padding: 0 5px 0 13px;
+				position: relative;
+			}
+			
+			.phone {
+				width: 80%;
+			}
+			
+			.getCode {
+				width: 40%;
+				float: right;
+				color: #007AE7;
+				border-style: none;
+				background: none;
+				outline: none;
+				font-size: 15px;
+				text-align: right;
+				margin-top: 10px;
+			}
+			
+			.codeOut {
+				margin-top: 30px;
+			}
+			
+			.chec {
+				margin-top: 30px;
+				font-size: 12px;
+			}
+			
+			.chec label {
+				color: #8E8E8E;
+			}
+			
+			.code {
+				width: 45%;
+			}
+			
+			.btn {
+				width: 100%;
+				height: 45px;
+				line-height: 45px;
+				text-align: center;
+				background: #007ae7;
+				color: #FFFFFF;
+				border-radius: 45px;
+				margin-top: 40px;
+			}
+			
+			::-webkit-input-placeholder {
+				font-size: 15px;
+			}
+			
+			.img {
+				width: 14px;
+				margin-top: 12px;
+				margin-right: 12px;
+			}
+			
+			.bg {
+				position: fixed;
+				left: 0;
+				bottom: -10px;
+			}
+			
+			.bg img {
+				width: 100%;
+				/*min-height: 100%;*/
+			}
+			
+			.weui-toast--text {
+				padding: 15px 20px;
+			}
+			
+			.weui-toast_content {
+				white-space: nowrap;
+			}
+			
+			.del {
+				width: 18px;
+				position: absolute;
+				top: 15px;
+				right: 5px;
+				display: none;
+			}
+			
+			.label {
+				color: #8e8e8e;
+			}
+			
+			input[type='checkbox']:checked~ .fa.fa-square-o:before {
+				content: "\f14a";
+			}
+		</style>
+	</head>
+
+	<body ontouchstart>
+		<div class="logoImg">
+			<img src="../images/login/loginImg.png" alt="" width="50%" />
+		</div>
+		<div class="iptGroup">
+			<div class="iptOut">
+				<img src="../images/login/phone.png" class="img" />
+				<input type="text" class="phone" placeholder="请输入手机号" maxlength="11" onkeyup="validatePhone(this);" onfocus="validatePhone(this);" />
+				<img src="../images/login/delete.png" alt="" class="del" />
+			</div>
+			<div class="iptOut codeOut">
+				<img src="../images/login/psd.png" class="img" />
+				<input type="text" class="code" placeholder="请输入短信验证码" />
+				<button class="getCode">获取验证码</button>
+			</div>
+			<div class="chec">
+				<label for="label" class="label">
+					<input type="checkbox" id="label" style="display: none;"/>
+					<span class="fa fa-square-o" style="color:#007AE7;font-size: 14px;"></span>
+					我已阅读并同意
+				</label>
+				<a href="">
+					<<员工贷用户注册协议>></a>
+			</div>
+			<div class="btn">登录</div>
+		</div>
+		<div class="bg">
+			<img src="../images/login/bg.png" />
+		</div>
+	</body>
+	<script type="text/javascript">
+		var token = window.localStorage.getItem("token");
+		console.log(token)
+		$(function() {
+				//防止键盘把当前输入框给挡住
+				$('input[type="text"]').on('click', function() {
+					var target = this;
+					setTimeout(function() {
+						target.scrollIntoViewIfNeeded();
+						console.log('scrollIntoViewIfNeeded');
+					}, 400);
+				});
+				$(".phone").bind('input porpertychange', function() {
+					var thisTxt = $(".phone").val();
+					$(".del").hide();
+					if(thisTxt.length > 0) {
+						$(".del").show();
+					}
+				})
+				$(".del").click(function() {
+					$(".phone").val("");
+				})
+			})
+			//禁止输入非数字
+		var validatePhone = function(obj) {
+				if(!(/[^\d]/g).test(obj.value)) return;
+				var pos = obj.selectionStart;
+				var posEnd = obj.selectionEnd;
+				obj.value = obj.value.replace(/[^\d]/g, '');
+				obj.selectionStart = pos;
+				obj.selectionEnd = posEnd - 1;
+			}
+			//失去焦点验证
+		$(".phone").blur(function() {
+				if($(this).val().length == 0) {
+					$.toast("请输入手机号", "text");
+				}
+				if($(this).val().length > 0 && $(this).val().length < 11) {
+					$.toast("请输入正确的手机号", "text");
+				}
+				if($(this).val().length == 11 && !/^(((13[0-9]{1})|(15[0-9]{1})|(18[0-9]{1}))+\d{8})$/.test($(this).val())) {
+					$.toast("请输入正确的手机号", "text");
+				}
+			})
+			//获取验证码
+		$(".getCode").click(function() {
+				var phone = $(".phone").val();
+				console.log(phone)
+				if(!/^(((13[0-9]{1})|(15[0-9]{1})|(18[0-9]{1}))+\d{8})$/.test($(".phone").val())) {
+					$.toast("请先输入手机号", "text");
+				} else {
+					var time = 60;
+					var data = {
+						phoneNum: phone
+					}
+					$.ajax({
+						type: "post",
+						url: emploan.config.basePath + "sms/sendSms.do",
+						contentType: "application/json",
+						dataType: "json",
+						headers: {
+							'token': token,
+						},
+						data: JSON.stringify(data),
+						success: function(data) {
+							if(data.code==0){
+								$(".getCode").attr('disabled', "true");
+							timer = setInterval(function() {
+								//避免重复发送
+								if(time <= 0) {
+									clearInterval(timer);
+									$(".getCode").html("获取验证码");
+									$(".getCode").removeAttr('disabled', "true");
+								} else {
+									time--;
+									$(".getCode").html(time + "s后重新获取");
+								}
+							}, 1000);
+							}else{
+								alert(data.errorMsg);
+							}
+							
+						},
+						error: function(err) {
+							alert(err.errorMsg);
+						}
+					});
+				}
+			})
+			//登录
+		$(".btn").click(function() {
+			if($(".phone").val().length == 0) {
+				$.toast("请输入手机号", "text");
+				return false;
+			}
+			if($(".phone").val().length > 0 && $(".code").val().length == 0) {
+				$.toast("请输入短信验证码", "text");
+				return false;
+			}
+			if(!$(".label input").attr("checked")) {
+				$.toast("请先勾选注册协议", "text");
+				return false;
+			}
+			submit();
+		})
+
+		function submit() {
+			var phone = $(".phone").val();
+			var code = $(".code").val();
+			var data = {
+				phoneNum: phone,
+				code: code
+			}
+			$.ajax({
+				type: "post",
+				url: emploan.config.basePath + "oauth/bind.do",
+				contentType: "application/json",
+				dataType: "json",
+				headers: {
+					'token': token,
+				},
+				data: JSON.stringify(data),
+				success: function(data) {
+					if(data.code == 0) {
+						window.location.href = "loan.html";
+					} else {
+						alert(data.errorMsg);
+					}
+
+				},
+				error: function(err) {
+					alert(err.errorMsg);
+				}
+			});
+		}
+		//是否选中注册协议
+		$(".label input").bind("click", function() {
+			if($(this).attr("checked")) {
+				$(this).removeAttr("checked");
+			} else {
+				$(this).attr("checked", "true")
+			}
+		})
+		$("input").on("focus", function() {
+			var _this = this;
+			setTimeout(function() {
+				_this.scrollIntoViewIfNeeded();
+			}, 200)
+		})
+	</script>
+
+</html>

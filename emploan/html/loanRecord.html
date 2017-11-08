@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+		<title>借款记录</title>
+		<link rel="stylesheet" type="text/css" href="../css/weui.min.css" />
+		<link rel="stylesheet" type="text/css" href="../css/jquery-weui.min.css" />
+		<script src="../libs/jquery-2.1.4.js"></script>
+		<script src="../libs/jquery-weui.min.js"></script>
+		<script src="../js/emploan-base.js"></script>
+		<script src="../js/filter.js"></script>
+
+		<style type="text/css">
+			* {
+				margin: 0;
+				padding: 0;
+			}
+			
+			body {
+				font-family: "微软雅黑";
+				background: rgb(240, 240, 240);
+			}
+			
+			.fl {
+				float: left;
+			}
+			
+			.fr {
+				float: right;
+			}
+			
+			.arrleft {
+				overflow: hidden;
+				position: absolute;
+				left: 10px
+			}
+			
+			.arrleft img {
+				float: left;
+				width: 12px;
+				margin-top: 14px;
+				margin-right: 5px;
+			}
+			
+			.weui-cells {
+				margin-top: 0;
+			}
+			
+			.weui-cell {
+				padding: 15px;
+			}
+			
+			.loan {
+				color: #666;
+				font-size: 16px;
+			}
+			
+			.col8e {
+				color: #8E8E8E;
+				font-size: 14px;
+			}
+			
+			.weui-cell__bd p {
+				padding: 3px 0;
+			}
+			
+			.loadmore,
+			.refresh {
+				display: none;
+			}
+			
+			.detail {
+				font-size: 1.2em;
+				text-align: center;
+				margin-top: 40%;
+				opacity: 0.5;
+			}
+			
+			.notDate {
+				border-radius: 50%;
+				width: 4em;
+				height: 4em;
+				background-image: url("../images/loan/face.png");
+				background-size: 100% 100%;
+				background-position: 50% 50%;
+				margin-bottom: 1em;
+				margin-left: 50%;
+				transform: translate(-50%);
+			}
+		</style>
+	</head>
+
+	<body ontouchstart>
+		<div class="weui-pull-to-refresh__layer fresh">
+			<div class='weui-pull-to-refresh__arrow'></div>
+			<div class='weui-pull-to-refresh__preloader'></div>
+			<div class="down">下拉刷新</div>
+			<div class="up">释放刷新</div>
+			<div class="refresh">正在刷新</div>
+		</div>
+		<div class="">
+			<div class="weui-cells" id="list">
+				<!--<a class="weui-cell weui-cell_access" href="">
+					<div class="weui-cell__bd">
+						<p class="loan">借款金额 : <span class="loanMoney">￥20000.00 </span><span class="fr col8e status" style="margin-right: 6px;">审核中</span></p>
+						<p class="col8e">申请日期 : <span class="agrDate">2017/10/24</span></p>
+					</div>
+					<div class="weui-cell__ft">
+					</div>
+				</a>-->
+				<!--<a class="weui-cell weui-cell_access" href="">
+					<div class="weui-cell__bd">
+						<p><span class="loan">借款金额 : ￥20000.00 </span><span class="fr col8e" style="margin-right: 6px;">还款中</span></p>
+						<p><span class="col8e">借款日 : 2017/10/24</span><span class="fr col8e">还款日 : 2017/11/24</span></p>
+					</div>
+					<div class="weui-cell__ft">
+					</div>
+				</a>-->
+			</div>
+		</div>
+		<div class="weui-loadmore loadmore">
+			<i class="weui-loading"></i>
+			<span class="weui-loadmore__tips">正在加载中</span>
+		</div>
+		<div class="weui-loadmore weui-loadmore_line" style="width: 90%;margin: 1.5em auto 0;display: none;">
+			<span class="weui-loadmore__tips">没有更多数据了</span>
+		</div>
+	</body>
+	<script type="text/javascript">
+		var token = window.localStorage.getItem("token");
+		$(function() {
+			//	下拉刷新
+			$(document.body).pullToRefresh().on("pull-to-refresh", function() {
+				setTimeout(function() {
+					$(document.body).pullToRefreshDone();
+					window.location.reload();
+				}, 2000);
+			});
+			$.showLoading("数据加载中...");
+			recordData(0);
+		})
+		var pageNum = 0;
+		var recordData = function(pageNum) {
+				var pageSize = 8;
+				pageNum += 1;
+				var data = {
+					pageNum: pageNum,
+					pageSize: pageSize
+				}
+				$.ajax({
+					type: "post",
+					url: emploan.config.basePath + "empLoan/getLoans.do",
+					contentType: "application/json",
+					dataType: "json",
+					headers: {
+						'token': token,
+					},
+					data: JSON.stringify(data),
+					success: function(data) {
+						if(data.code == 0) {
+							$.hideLoading();
+							var records = data.data.records;
+							console.log(records.length)
+							if(records.length > 0) {
+								$(".fresh").show();
+								if(records.length > 7) {
+									$(".loadmore").show();
+								}
+								window.localStorage.setItem("totalPage", data.data.totalPage);
+								var html = '';
+								for(var i = 0; i < records.length; i++) {
+									var loanStatus, repayDtae;
+									if(records[i].dueDate) {
+										loanStatus = "借款日 : ";
+										repayDtae = "还款日 : " + records[i].dueDate;
+									} else {
+										loanStatus = "申请日期 : ";
+										repayDtae = ""
+									}
+									html += '<a class="weui-cell weui-cell_access record" >';
+									html += '<div class="weui-cell__bd">';
+									html += '<p class="loan">借款金额 : <span class="loanMoney">' + "￥" + records[i].applyAmount.toFixed(2) + '</span><span class="fr col8e status" style="margin-right: 6px;">' + records[i].applyStatusDesc + '</span></p>';
+									html += '<p class="col8e"><span>' + loanStatus + '</span><span class="agrDate">' + records[i].cTime + '</span><span class="fr col8e">' + repayDtae + '</span></p>';
+									html += '</div>';
+									html += '<div class="weui-cell__ft"></div>';
+									html += '</a>';
+								}
+								$("#list").append(html);
+								$(".record").each(function() {
+									$(this).click(function() {
+										var index = $(this).index();
+										window.localStorage.setItem("id", records[index].id);
+										window.location.href = "loanDetail.html";
+									})
+								})
+							} else {
+								var html = "<div class='detail'><div class='notDate'></div><span style='font-size: 18px;'>暂无记录 </span></div>";
+								$("body").append(html);
+							}
+
+						} else {
+							alert(data.errorMsg);
+						}
+					},
+					error: function(err) {
+						alert(err.errorMsg);
+					}
+				});
+			}
+			//上啦加载更多
+		var loading = false;
+		$(document.body).infinite().on("infinite", function() {
+			if(loading) return;
+			loading = true;
+			setTimeout(function() {
+				pageNum += 1;
+				console.log(pageNum, parseInt(window.localStorage.getItem("totalPage")));
+				if(pageNum < parseInt(window.localStorage.getItem("totalPage"))) {
+					recordData(pageNum);
+				} else {
+					$(".loadmore").hide();
+					$(".weui-loadmore_line").show();
+				}
+				loading = false;
+			}, 2000);
+		});
+	</script>
+
+</html>

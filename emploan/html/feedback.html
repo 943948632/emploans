@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+		<title>意见反馈</title>
+		<link rel="stylesheet" type="text/css" href="../css/weui.min.css" />
+		<link rel="stylesheet" type="text/css" href="../css/jquery-weui.min.css" />
+		<script src="../libs/jquery-2.1.4.js"></script>
+		<script src="../libs/jquery-weui.min.js"></script>
+		<script src="../js/emploan-base.js"></script>
+		<script src="../js/filter.js"></script>
+		<style type="text/css">
+			* {
+				margin: 0;
+				padding: 0;
+			}
+			
+			body {
+				font-family: "微软雅黑";
+			}
+			
+			.arrleft {
+				overflow: hidden;
+				position: absolute;
+				left: 10px
+			}
+			
+			.arrleft img {
+				float: left;
+				width: 12px;
+				margin-top: 14px;
+				margin-right: 5px;
+			}
+			
+			.view {
+				padding: 10px;
+			}
+			
+			.weui-cell,
+			.weui-textarea {
+				background: rgb(240, 240, 240);
+			}
+			
+			.submit {
+				width: 92%;
+				margin: 0 auto;
+				height: 44px;
+				line-height: 44px;
+				border-radius: 15px;
+				background: #007ae7;
+				text-align: center;
+				color: #fff;
+				margin-top: 15px;
+			}
+			
+			.weui-dialog {
+				border-radius: 10px;
+			}
+			
+			.weui-dialog__title {
+				font-weight: 600;
+			}
+			
+			.weui-dialog__btn {
+				color: #007ae7;
+			}
+			
+			::-webkit-input-placeholder {
+				font-size: 16px;
+				color: #8E8E8E;
+			}
+		</style>
+	</head>
+
+	<body ontouchstart>
+		<div class="view">
+			<div class="weui-cells weui-cells_form">
+				<div class="weui-cell">
+					<div class="weui-cell__bd">
+						<textarea class="weui-textarea" placeholder="请输入遇到的问题或建议..." rows="5"></textarea>
+						<div class="weui-textarea-counter">/400</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="submit">
+			提交
+		</div>
+	</body>
+	<script type="text/javascript">
+		var token = window.localStorage.getItem("token");
+		$(".weui-dialog__ft weui-dialog__btn").text("我知道了")
+		$(".submit").click(function() {
+			var textarea = $(".weui-textarea").val();
+			if(textarea.length == "0") {
+				$.toast("请输入问题或建议", "text");
+				return false;
+			}
+			if(textarea.length > 400) {
+				$.toast("输入的数要少于400个", "text");
+				return false;
+			}
+			var data = {
+				content: textarea,
+			}
+			$.ajax({
+				type: "post",
+				url: emploan.config.basePath + "platform/feedback/addFeedback.do",
+				contentType: "application/json",
+				dataType: "json",
+				headers: {
+					'token': token,
+				},
+				data: JSON.stringify(data),
+				success: function(data) {
+					if(data.code == "0") {
+						$.alert({
+							title: '提交成功',
+							text: '感谢您对员工贷的信任与支持!',
+							onOK: function() {
+								$(".weui-textarea").val("");
+							}
+						});
+					}
+				},
+				error: function(err) {
+					alert(err.errorMsg);
+				}
+			});
+		})
+	</script>
+
+</html>

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+		<title>银行卡</title>
+		<link rel="stylesheet" type="text/css" href="../css/weui.min.css" />
+		<link rel="stylesheet" type="text/css" href="../css/jquery-weui.min.css" />
+		<script src="../libs/jquery-2.1.4.js"></script>
+		<script src="../libs/jquery-weui.min.js"></script>
+		<script src="../js/emploan-base.js"></script>
+		<script src="../js/filter.js"></script>
+		<style type="text/css">
+			* {
+				margin: 0;
+				padding: 0;
+			}
+			
+			body {
+				font-family: "微软雅黑";
+				background: rgb(240, 240, 240);
+			}
+			
+			.arrleft {
+				overflow: hidden;
+				position: absolute;
+				left: 10px
+			}
+			
+			.arrleft img {
+				float: left;
+				width: 12px;
+				margin-top: 14px;
+				margin-right: 5px;
+			}
+			
+			.bankInfo {
+				width: 94%;
+				margin: 0 auto;
+				padding: 0 10px;
+				margin-top: 25px;
+				position: relative;
+			}
+			
+			.bankInfo p {
+				line-height: 26px;
+				position: absolute;
+				top: 15px;
+				left: 20px;
+			}
+			
+			.bankInfo div {
+				line-height: 26px;
+				position: absolute;
+				top: 60px;
+				right: 50px;
+			}
+			
+			.bankInfo p img {
+				vertical-align: middle;
+			}
+			
+			.bank {
+				margin-left: 10px;
+			}
+		</style>
+	</head>
+
+	<body ontouchstart>
+		<!--<div class="bankInfo">
+			<img src="../images/my/默认@2x.png" width="100%"/>
+			<p>
+				<img src="../images/my/timg@2x.png" width="26px"/>
+				<span class="bank">建设银行</span>
+			</p>
+			<div>
+				<span>** </span>
+				<span>**** </span>
+				<span>**** </span>
+				<span>1234</span>
+			</div>
+		</div>-->
+	</body>
+	<script type="text/javascript">
+		var token = window.localStorage.getItem("token");
+		$(function() {
+			$.showLoading("数据加载中...");
+			bankAccount();
+		})
+		var bankAccount = function() {
+			$.ajax({
+				type: "post",
+				url: emploan.config.basePath + "emp/getBanks.do",
+				contentType: "application/json",
+				dataType: "json",
+				headers: {
+					'token': token,
+				},
+				data: {},
+				success: function(data) {
+						$.hideLoading();
+					if(data.code == 0) {
+						var data = data.data;
+						if(data.length) {
+							for(var i = 0; i < data.length; i++) {
+								if(data[i].isDefault == true) {
+									var html = '';
+									html += '<div class="bankInfo">';
+									html += '<img src="../images/my/默认@2x.png" width="100%"/>';
+									html += '<p><img src="../images/my/timg@2x.png" width="26px"/>';
+									html += '<span class="bank">' + data[i].dicName + '</span></p>';
+									html += '<div>';
+									html += '<span>** </span>';
+									html += '<span>**** </span>';
+									html += '<span>**** </span>';
+									html += '<span>' + data[i].bankAccount.substring(data[i].bankAccount.length - 4) + '</span>';
+									html += '</div>';
+								}
+							}
+							$("body").append(html);
+						} else {
+							alert("未绑定银行卡，请联系管理员")
+						}
+					} else {
+						alert(data.errorMsg)
+					}
+
+				},
+				error: function(err) {
+					alert(err.errorMsg);
+				}
+			});
+		}
+	</script>
+
+</html>

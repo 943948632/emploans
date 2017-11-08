@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+		<title>借款详情</title>
+		<link rel="stylesheet" type="text/css" href="../css/weui.min.css" />
+		<link rel="stylesheet" type="text/css" href="../css/jquery-weui.min.css" />
+		<script src="../libs/jquery-2.1.4.js"></script>
+		<script src="../libs/jquery-weui.min.js"></script>
+		<script src="../js/emploan-base.js"></script>
+		<script src="../js/filter.js"></script>
+
+		<style type="text/css">
+		* {
+				margin: 0;
+				padding: 0;
+			}
+			
+			body {
+				font-family: "微软雅黑";
+				background: rgb(240, 240, 240);
+			}
+		}
+		.arrleft {
+			overflow: hidden;
+			position: absolute;
+			left: 10px
+		}
+		.arrleft img {
+			float: left;
+			width: 12px;
+			margin-top: 14px;
+			margin-right: 5px;
+		}
+		.box-cells,
+		.box {
+			margin-top: 0;
+			font-size: 14px;
+		}
+		input {
+			text-align: right;
+		}
+		.weui-cells:before {
+			border-top: none;
+		}
+		.weui-cells:after {
+			border-bottom: none;
+		}
+		.weui-cell:before {
+			border-top: none;
+		}
+		::-webkit-input-placeholder {
+			font-size: 12px;
+			color: #8E8E8E;
+		}
+		.weui-cell__ft {
+			font-size: 12px;
+			color: #8E8E8E;
+		}
+		.pad-5 {
+			padding: 5px 15px;
+		}
+		.weui-input {
+			width: 100%;
+			border: 0;
+			outline: 0;
+			-webkit-appearance: none;
+			background-color: transparent;
+			font-size: inherit;
+			color: inherit;
+			height: 1.41176471em;
+			line-height: 1.41176471;
+		}
+		.weui-picker-container .weui-cell__ft {
+			display: none;
+		}
+		.weui-picker-container p {
+			text-align: center;
+			color: #007AE7;
+		}
+		/*.agree{
+			display: none;
+		}*/
+		</style>
+	</head>
+
+	<body ontouchstart>
+		<div class="box">
+			<!--<div class="weui-cells box-cells">
+			    <div class="weui-cell">
+				    <div class="weui-cell__bd">
+				      <p>申请编号</p>
+				    </div>
+				    <div class="weui-cell__ft">YGD170901001</div>
+			    </div>
+			    <div class="weui-cell">
+				    <div class="weui-cell__bd">
+				      <p>借款日期</p>
+				    </div>
+				    <div class="weui-cell__ft">2017/09/01</div>
+			    </div>
+		        <div class="weui-cell">
+				    <div class="weui-cell__bd">
+				      <p>借款期限</p>
+				    </div>
+				    <div class="weui-cell__ft">15天</div>
+			    </div>
+			    <div class="weui-cell">
+				    <div class="weui-cell__bd">
+				      <p>还款日期</p>
+				    </div>
+				    <div class="weui-cell__ft">2017/10/01</div>
+			    </div>
+			    <div class="weui-cell">
+				    <div class="weui-cell__bd">
+				      <p>借款金额</p>
+				    </div>
+				    <div class="weui-cell__ft">￥20000.00</div>
+			    </div>
+			    <div class="weui-cell">
+				    <div class="weui-cell__bd">
+				      <p>总利息</p>
+				    </div>
+				    <div class="weui-cell__ft">￥200.00</div>
+			    </div>
+			    <div class="weui-cell">
+				    <div class="weui-cell__bd">
+				      <p>状态</p>
+				    </div>
+				    <div class="weui-cell__ft">还款中</div>
+			    </div>
+			    <div class="weui-cell">
+				    <div class="weui-cell__bd">
+				      <p>借款协议</p>
+				    </div>
+				    <a href="" class="weui-cell__ft" style="color: #007AE7;">查看</a>
+			    </div>
+			</div>-->
+		</div>
+	</body>
+	<script type="text/javascript">
+		var id = window.localStorage.getItem("id");
+		var token = window.localStorage.getItem("token");
+		$.showLoading("数据加载中...");
+		var data = {
+			id: id,
+		}
+		$.ajax({
+			type: "post",
+			url: emploan.config.basePath + "empLoan/getLoan.do",
+			contentType: "application/json",
+			dataType: "json",
+			headers: {
+				'token': token,
+			},
+			data: JSON.stringify(data),
+			success: function(data) {
+				if(data.code == 0) {
+					$.hideLoading();
+					var data = data.data;
+					console.log(data.display == true)
+					var html = '';
+					html += '<div class="weui-cells box-cells">';
+					html += '<div class="weui-cell"><div class="weui-cell__bd">';
+					html += '<p>申请编号</p></div>';
+					html += '<div class="weui-cell__ft">' + data.applyNo + '</div></div>';
+					html += '<div class="weui-cell"><div class="weui-cell__bd">';
+					html += '<p class="cTime">申请日期</p></div>';
+					html += '<div class="weui-cell__ft">' + data.cTime + '</div></div>';
+					html += '<div class="weui-cell"><div class="weui-cell__bd">';
+					html += '<p>借款期限</p></div>';
+					html += '<div class="weui-cell__ft">' + data.loanDay + "天" + '</div></div>';
+					html += '<div class="weui-cell dueDate"><div class="weui-cell__bd">';
+					html += '<p>还款日期</p></div>';
+					html += '<div class="weui-cell__ft">' + data.dueDate + '</div></div>';
+					html += '<div class="weui-cell"><div class="weui-cell__bd">';
+					html += '<p>借款金额</p></div>';
+					html += '<div class="weui-cell__ft">' + "￥" + data.applyAmount.toFixed(2) + '</div></div>';
+					html += '<div class="weui-cell"><div class="weui-cell__bd">';
+					html += '<p>总利息</p></div>';
+					html += '<div class="weui-cell__ft">' + "￥" + data.totalInterest + '</div></div>';
+					html += '<div class="weui-cell"><div class="weui-cell__bd">';
+					html += '<p>状态</p></div>';
+					html += '<div class="weui-cell__ft">' + data.applyStatusDesc + '</div></div>';
+					html += '<div class="weui-cell agree"><div class="weui-cell__bd">';
+					html += '<p>借款协议</p></div>';
+					html += '<a class="weui-cell__ft check" style="color: #007AE7;">查看</a></div>';
+					$(".box").append(html);
+					$(".agree").hide();
+					$(".dueDate").hide();
+					if(data.remark) {
+						var rhtml = '';
+						rhtml += '<div class="weui-cell" style="background-color: #FFFFFF;"><div class="weui-cell__bd">';
+						rhtml += '<p>备注:<span>' + data.remark + '</span></p>';
+						rhtml += '</div></div>';
+						$(".box").append(rhtml);
+					}
+					if(data.display == true) {
+						$(".agree").show();
+					}
+					if(data.dueDate) {
+						$(".dueDate").show();
+						$(".cTime").text("借款日期")
+					}
+					$(".check").on("click", function() {
+						window.localStorage.setItem("moneyNum", data.applyAmount);
+						window.localStorage.setItem("loanDate", data.loanDay);
+						window.location.href = "registAgreement.html";
+					})
+				}
+			},
+			error: function(err) {
+				alert(err.errorMsg);
+			}
+		});
+	</script>
+
+</html>

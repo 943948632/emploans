@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+		<title>示例</title>
+		<link rel="stylesheet" type="text/css" href="../css/weui.min.css" />
+		<link rel="stylesheet" type="text/css" href="../css/jquery-weui.min.css" />
+		<script type="text/javascript" src="../libs/jquery-2.1.4.js"></script>
+		<script src="../libs/jquery-weui.min.js"></script>
+		<script src="../js/emploan-base.js"></script>
+		<script src="../js/filter.js"></script>
+		<style type="text/css">
+			* {
+				margin: 0;
+				padding: 0;
+			}
+			
+			body {
+				font-family: "微软雅黑";
+				background: rgb(240, 240, 240);
+			}
+			
+			a {
+				text-decoration: none;
+			}
+			
+			.arrleft {
+				overflow: hidden;
+				position: absolute;
+				left: 10px
+			}
+			
+			.arrleft img {
+				float: left;
+				width: 12px;
+				margin-top: 14px;
+				margin-right: 5px;
+			}
+			
+			.cardFile {
+				margin-top: 30px;
+			}
+			
+			.box-item {
+				width: 80%;
+				margin: 10px auto;
+				position: relative;
+			}
+			
+			.box-item img {
+				width: 100%;
+			}
+			
+			.box-input {
+				width: 100%;
+				height: 100%;
+				border: 0;
+				position: absolute;
+				top: 0;
+				left: 0;
+				opacity: 0;
+				filter: alpha(opacity=0);
+			}
+			
+			.add {
+				width: 20%!important;
+				position: absolute;
+				top: 25%;
+				left: 0;
+				right: 0;
+				bottom: 0;
+				margin: 0 auto;
+			}
+			
+			.tip {
+				color: #FFFFFF;
+				font-size: 14px;
+				text-align: center;
+				position: absolute;
+				position: absolute;
+				top: 80%;
+				left: 0;
+				right: 0;
+				bottom: 0;
+				margin: 0 auto;
+			}
+			
+			.dip {
+				width: 80%;
+				margin: 20px auto;
+				font-size: 14px;
+				color: #8E8E8E;
+			}
+			
+			.borrow-btn {
+				width: 92%;
+				margin: 0 auto;
+				height: 44px;
+				line-height: 44px;
+				border-radius: 15px;
+				background: #007ae7;
+				text-align: center;
+				color: #fff;
+				margin-top: 30px;
+			}
+			
+			.stroll {
+				text-align: center;
+				color: #007AE7;
+				margin-top: 20px;
+			}
+			
+			.example {
+				text-align: center;
+				font-size: 14px;
+			}
+			
+			a {
+				color: #007AE7;
+			}
+			
+			.fileBtn {
+				width: 100%;
+				display: block;
+				position: absolute;
+				top: 0;
+				left: 0;
+			}
+			
+			.showPic,
+			.showPic1 {
+				display: none;
+			}
+			
+			.mask {
+				background: #000000;
+				opacity: 0.4;
+				position: fixed;
+				top: 0;
+				right: 0;
+				left: 0;
+				bottom: 0;
+				display: none;
+			}
+			
+			.my-toast {
+				width: 80%;
+				margin: 0 auto;
+				background: #FFFFFF;
+				border-radius: 15px;
+				position: absolute;
+				top: 35%;
+				left: 50%;
+				transform: translate(-50%);
+				display: none;
+			}
+			
+			.my-toast div {
+				text-align: center;
+			}
+			
+			.Ttext {
+				padding: 25px 0;
+			}
+			
+			.know {
+				border-top: 1px solid #eee;
+				padding: 15px 0;
+				color: #007AE7;
+			}
+		</style>
+	</head>
+
+	<body ontouchstart>
+		<div class="cardFile">
+			<div class="box-item">
+				<img src="../images/loan/up.png" id="pic1">
+				<img src="../images/loan/add.png" class="add">
+				<div class="tip">点击上传身份证正面 (人面像)</div>
+				<input type="file" name="image" id="uploadPic" class="box-input">
+				<label for="uploadPic" class="fileBtn">
+					<img class="showPic" src="" />
+				</label>
+				<canvas id="uploadImg" style="display:none"></canvas>
+			</div>
+			<div class="box-item">
+				<img src="../images/loan/down.png" id="pic2">
+				<img src="../images/loan/add.png" class="add">
+				<div class="tip">点击上传身份证反面 (国徽像)</div>
+				<input type="file" name="image" id="uploadPic1" class="box-input">
+				<label for="uploadPic1" class="fileBtn">
+					<img class="showPic1" src="" />
+				</label>
+				<canvas id="uploadImg1" style="display:none"></canvas>
+			</div>
+			<div class="example">
+				<a href="example.html">查看示例</a>
+			</div>
+			<div class="dip">
+				温馨提示 : 请上传本人身份证照片，确保真实有效， 并按图示上传您的身份证照片。
+			</div>
+		</div>
+		<div class="borrow-btn">
+			确认提交
+		</div>
+		<div class="stroll">
+			<a href="loan.html">暂不上传，先逛逛~</a>
+		</div>
+		<div class="mask"></div>
+		<div class="my-toast">
+			<div class="Ttext">
+				请输入大于1000的数字
+			</div>
+			<div class="know">
+				我知道了
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript">
+		$(function() {
+			var token = window.localStorage.getItem("token");
+			var backImage = "",
+				frontImage = "";
+			$("#uploadPic").on('change', function(event) {
+				event.preventDefault();
+				var file = $(this)[0].files[0];
+				if(file.size > 2097152 * 2) {
+					alert("上传图片请小于4M");
+					return false;
+				}
+				if(!/image\/\w+/.test(file.type)) {
+					alert("文件必须为图片！");
+					return false;
+				}
+				var reader = new FileReader();
+				reader.readAsDataURL(file);
+				reader.onload = function(e) {
+					createCanvas(this.result);
+				}
+			});
+
+			function createCanvas(src) {
+				var canvas = document.getElementById("uploadImg");
+				var cxt = canvas.getContext('2d');
+				canvas.width = 300;
+				canvas.height = 150;
+				var img = new Image();
+				img.src = src;
+				img.onload = function() {
+					$.showLoading("图片上传中");
+					cxt.drawImage(img, 0, 0, 300, 150);
+					$(".showPic").show().attr('src', canvas.toDataURL("image/jpeg", 0.9));
+					var data = {
+						image: canvas.toDataURL("image/jpeg", 0.9)
+					}
+					$.ajax({
+						url: emploan.config.basePath + "upload/idcard/uploadBase64.do",
+						contentType: "application/json",
+						type: "POST",
+						dataType: "json",
+						headers: {
+							'token': token,
+						},
+						data: JSON.stringify(data),
+						success: function(data) {
+							if(data.code == 0) {
+								$.hideLoading();
+								//								$("#pic1").css("opacity","0");
+								$(".showPic").show().attr('url', data.data);
+								frontImage = data.data;
+							} else {
+								alert(data.errorMsg)
+							}
+						},
+						error: function(err) {
+							alert(err.errorMsg);
+						}
+					});
+				}
+			}
+			$("#uploadPic1").on('change', function(event) {
+				event.preventDefault();
+				var file = $(this)[0].files[0];
+				if(file.size > 2097152) {
+					alert("上传图片请小于2M");
+					return false;
+				}
+				if(!/image\/\w+/.test(file.type)) {
+					alert("文件必须为图片！");
+					return false;
+				}
+				var reader = new FileReader();
+				reader.readAsDataURL(file);
+				reader.onload = function(e) {
+					createCanvas1(this.result);
+				}
+			});
+
+			function createCanvas1(src) {
+				var canvas = document.getElementById("uploadImg1");
+				var cxt = canvas.getContext('2d');
+				canvas.width = 300;
+				canvas.height = 150;
+				var img = new Image();
+				img.src = src;
+				img.onload = function() {
+					$.showLoading("图片上传中");
+					cxt.drawImage(img, 0, 0, 300, 150);
+					$(".showPic1").show().attr('src', canvas.toDataURL("image/jpeg", 0.9));
+					var data = {
+						image: canvas.toDataURL("image/jpeg", 0.9)
+					}
+					$.ajax({
+						url: emploan.config.basePath + "upload/idcard/uploadBase64.do",
+						type: "POST",
+						dataType: "json",
+						contentType: "application/json",
+						headers: {
+							'token': token,
+						},
+						data: JSON.stringify(data),
+						success: function(data) {
+							if(data.code == 0) {
+								$.hideLoading();
+								//								$("#pic2").css("opacity","0");
+								$(".showPic1").show().attr('url', data.data);
+								backImage = data.data;
+							} else {
+								alert(data.errorMsg)
+							}
+						},
+						error: function(err) {
+							alert(err.errorMsg);
+						}
+					});
+				}
+			}
+			$(".borrow-btn").click(function() {
+				if(!frontImage || frontImage == null || frontImage == "") {
+					alert('请上传身份证正面');
+					return false;
+				}
+				if(!backImage || backImage == null || backImage == "") {
+					alert('请上传身份证反面');
+					return false;
+				}
+				$(".know").text("返回");
+				$.showLoading("提交中...");
+				var data = {
+					frontImage: frontImage,
+					backImage: backImage,
+				}
+				$.ajax({
+					type: "post",
+					url: emploan.config.basePath + "empApply/saveIdCard.do",
+					contentType: "application/json",
+					dataType: "json",
+					headers: {
+						'token': token,
+					},
+					data: JSON.stringify(data),
+					dataType: "json",
+					success: function(data) {
+						$.hideLoading();
+						$(".showPic").hide().attr('src', "");
+						$(".showPic1").hide().attr('src', "");
+						console.log(data);
+						if(data.code == 0) {
+							$(".Ttext").text("身份证信息上传成功");
+							$(".mask").show();
+							$(".my-toast").show();
+							$(".know").click(function() {
+								$(".mask").hide();
+								$(".my-toast").hide();
+								window.location.href = "loanApplication.html";
+							})
+						} else {
+							$(".Ttext").text("身份证图片识别失败，请重新上传");
+							$(".mask").show();
+							$(".my-toast").show();
+							$(".know").click(function() {
+								$(".mask").hide();
+								$(".my-toast").hide();
+							})
+						}
+					},
+					error: function(err) {
+						alert(err.errorMsg);
+					}
+				});
+			})
+		})
+	</script>
+
+</html>
